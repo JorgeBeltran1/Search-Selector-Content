@@ -7,6 +7,7 @@ import React from 'react'
 import Pagina from "../PaginaBuscador/Pagina-busca";
 import RepAud from "../reproductor/ReproductorAudio";
 import VideoPlayer from "../reproductor/ReproductorVideo";
+import RepAudLib from "../reproductor/ReproductorAudiolib";
 export const Routers = () => {
 
     return (
@@ -15,6 +16,7 @@ export const Routers = () => {
                 <Route path="/" element={<Pagina/>}/>
                 <Route path="/repAudio" element={ <RepAud/>}/>
                 <Route path="/repVideo" element={<VideoPlayer/>}/>
+                <Route path="/RepAudioLib" element={<RepAudLib/>}/>
             </Routes>
 
 
