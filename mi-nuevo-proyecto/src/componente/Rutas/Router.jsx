@@ -4,12 +4,13 @@ import {
     Routes
 } from "react-router-dom";
 import React from 'react'
-export const Router = () => {
+import Pagina from "../PaginaBuscador/Pagina-busca";
+export const Routers = () => {
 
     return (
         <Router>
             <Routes>
-
+                <Route path="/" element={<Pagina/>}/>
 
 
             </Routes>
@@ -25,3 +26,4 @@ export const Router = () => {
 
 
 }
+export default Routers;
