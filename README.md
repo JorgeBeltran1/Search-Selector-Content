@@ -15,8 +15,7 @@ styles.css: Contains the styling for the application, ensuring a consistent and 
 Installation
 Clone the repository:
 
-bash
-Copiar código
+
 git clone https://github.com/JorgeBeltran1/Search-Selector-Content/
 cd itunes-search-app
 Install dependencies:
