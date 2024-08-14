@@ -1,16 +1,23 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { Button } from 'react-bootstrap'; // Importar Button de react-bootstrap
-import './stilo.css'; // Asegúrate de tener estos estilos en tu archivo CSS
+import { Button, Modal } from 'react-bootstrap';
+import './stilo.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
+
 export default function VideoPlayer() {
   const location = useLocation();
-  const { track } = location.state || {};
   const navigate = useNavigate();
+  const { track } = location.state || {};
+
+  const [showModal, setShowModal] = useState(false);
+
   if (!track) {
     return <div>No se encontraron datos.</div>;
   }
+
+  const handleCloseModal = () => setShowModal(false);
+  const handleShowModal = () => setShowModal(true);
 
   return (
     <div>
@@ -18,7 +25,8 @@ export default function VideoPlayer() {
         variant="primary"
         onClick={() => navigate('/')}
         className="circle-button"
-      ><FontAwesomeIcon icon={faArrowLeft} className="icon-left" />
+      >
+        <FontAwesomeIcon icon={faArrowLeft} className="icon-left" />
       </Button>
       <h2>Detalles del Video</h2>
       <table>
@@ -28,11 +36,12 @@ export default function VideoPlayer() {
             <th>Valor</th>
           </tr>
           <tr>
-            <td><strong>Corto de Video</strong></td>
-            <td> <video controls width="300" height="200">
-              <source src={track.previewUrl} type="video/mp4" />
-              Tu navegador no soporta el elemento de video.
-            </video>
+            <td><strong>Corto del Video</strong></td>
+            <td>
+              <video controls width="300" height="200">
+                <source src={track.previewUrl} type="video/mp4" />
+                Tu navegador no soporta el elemento de video.
+              </video>
             </td>
           </tr>
           <tr>
@@ -52,19 +61,19 @@ export default function VideoPlayer() {
             <td><a href={track.artistViewUrl} target="_blank" rel="noopener noreferrer">Ver Artista</a></td>
           </tr>
           <tr>
-            <td><strong>URL del Pelicula</strong></td>
+            <td><strong>URL del Track</strong></td>
             <td><a href={track.trackViewUrl} target="_blank" rel="noopener noreferrer">Ver Track</a></td>
           </tr>
           <tr>
-            <td><strong>Imagen </strong></td>
+            <td><strong>URL de la Colección</strong></td>
+            <td><a href={track.collectionViewUrl} target="_blank" rel="noopener noreferrer">Ver Colección</a></td>
+          </tr>
+          <tr>
+            <td><strong>Imagen (100x100)</strong></td>
             <td><img src={track.artworkUrl100} alt="Imagen del Track" /></td>
           </tr>
           <tr>
-            <td><strong>Precio de la Colección</strong></td>
-            <td>${track.collectionPrice}</td>
-          </tr>
-          <tr>
-            <td><strong>Precio de Pélicula</strong></td>
+            <td><strong>Precio del Track</strong></td>
             <td>${track.trackPrice}</td>
           </tr>
           <tr>
@@ -72,28 +81,37 @@ export default function VideoPlayer() {
             <td>{new Date(track.releaseDate).toLocaleDateString()}</td>
           </tr>
           <tr>
-            <td><strong>Duración del Track</strong></td>
-            <td>{(track.trackTimeMillis / 1000 / 60).toFixed(2)} minutos</td>
+            <td><strong>Género Principal</strong></td>
+            <td>{track.primaryGenreName}</td>
           </tr>
           <tr>
             <td><strong>País</strong></td>
             <td>{track.country}</td>
           </tr>
           <tr>
-            <td><strong>Género Principal</strong></td>
-            <td>{track.primaryGenreName}</td>
-          </tr>
-          <tr>
-            <td><strong>Clasificación de Contenido</strong></td>
-            <td>{track.contentAdvisoryRating}</td>
-          </tr>
-          <tr>
             <td><strong>Descripción Larga</strong></td>
-            <td>{track.longDescription}</td>
+            <td>
+              <Button variant="info" onClick={handleShowModal}>
+                Ver Descripción Completa
+              </Button>
+            </td>
           </tr>
         </tbody>
       </table>
+
+      <Modal show={showModal} onHide={handleCloseModal} centered size="sm" className="custom-modal">
+        <Modal.Header >
+          <Modal.Title>Descripción Completa</Modal.Title>
+        </Modal.Header>
+        <Modal.Body style={{ maxHeight: '70vh', overflowY: 'auto' }}>
+          <p>{track.longDescription}</p>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleCloseModal}>
+            Cerrar
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </div>
   );
 }
-

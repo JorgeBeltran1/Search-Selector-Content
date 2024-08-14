@@ -1,22 +1,18 @@
 import React from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { Button } from 'react-bootstrap'; // Importar Button de react-bootstrap
-import './stilo.css'; // Asegúrate de tener estos estilos en tu archivo CSS
+import { Button } from 'react-bootstrap';
+import './stilo.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
 
 export default function RepAud() {
   const location = useLocation();
   const navigate = useNavigate();
-
   const { track } = location.state || {};
 
   if (!track) {
     return <div>No se encontraron datos.</div>;
   }
-
-  // Función para truncar texto
-
 
   return (
     <div>
@@ -24,9 +20,10 @@ export default function RepAud() {
         variant="primary"
         onClick={() => navigate('/')}
         className="circle-button"
-      ><FontAwesomeIcon icon={faArrowLeft} className="icon-left" />
+      >
+        <FontAwesomeIcon icon={faArrowLeft} className="icon-left" />
       </Button>
-      <h2>Detalles del Musica</h2>
+      <h2>Detalles de la Música</h2>
       <table>
         <tbody>
           <tr>
@@ -35,10 +32,12 @@ export default function RepAud() {
           </tr>
           <tr>
             <td><strong>Prueba de Música</strong></td>
-            <td><audio controls>
-              <source src={track.previewUrl} type="audio/mp4" />
-              No se encuentra prueba de Música
-            </audio></td>
+            <td>
+              <audio controls>
+                <source src={track.previewUrl} type="audio/mp4" />
+                No se encuentra prueba de música.
+              </audio>
+            </td>
           </tr>
           <tr>
             <td><strong>Tipo</strong></td>
@@ -69,7 +68,7 @@ export default function RepAud() {
             <td><a href={track.trackViewUrl} target="_blank" rel="noopener noreferrer">Ver Pista</a></td>
           </tr>
           <tr>
-            <td><strong>URL de la Imagen (100x100)</strong></td>
+            <td><strong>Imagen (100x100)</strong></td>
             <td><img src={track.artworkUrl100} alt="Imagen de la Colección" /></td>
           </tr>
           <tr>

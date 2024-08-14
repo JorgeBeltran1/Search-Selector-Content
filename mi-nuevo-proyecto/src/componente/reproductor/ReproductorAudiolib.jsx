@@ -1,7 +1,7 @@
 import React from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { Button } from 'react-bootstrap'; // Importar Button de react-bootstrap
-import './stilo.css'; // Asegúrate de tener estos estilos en tu archivo CSS
+import { Button } from 'react-bootstrap';
+import './stilo.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
 
@@ -20,9 +20,10 @@ export default function RepAudLib() {
         variant="primary"
         onClick={() => navigate('/')}
         className="circle-button"
-      ><FontAwesomeIcon icon={faArrowLeft} className="icon-left" />        
+      >
+        <FontAwesomeIcon icon={faArrowLeft} className="icon-left" />
       </Button>
-      <h2>Detalles del Audio Libro</h2>
+      <h2>Detalles del Audiolibro</h2>
       <table>
         <tbody>
           <tr>
@@ -30,7 +31,7 @@ export default function RepAudLib() {
             <th>Información</th>
           </tr>
           <tr>
-            <td><h3>Prueba de Audio Libro</h3></td>
+            <td><h3>Prueba de Audiolibro</h3></td>
             <td>
               <audio controls>
                 <source src={track.previewUrl} type="audio/mp4" />
@@ -59,7 +60,7 @@ export default function RepAudLib() {
             <td><a href={track.collectionViewUrl} target="_blank" rel="noopener noreferrer">Ver Colección</a></td>
           </tr>
           <tr>
-            <td><strong>Imagen de Libro</strong></td>
+            <td><strong>Imagen del Libro</strong></td>
             <td><img src={track.artworkUrl100} alt="Imagen de la Colección" /></td>
           </tr>
           <tr>
