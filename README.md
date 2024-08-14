@@ -17,17 +17,15 @@ Clone the repository:
 
 bash
 Copiar código
-git clone https://github.com/yourusername/itunes-search-app.git
+git clone https://github.com/JorgeBeltran1/Search-Selector-Content/
 cd itunes-search-app
 Install dependencies:
 
-bash
-Copiar código
+
 npm install
 Start the development server:
 
-bash
-Copiar código
+
 npm start
 The application will be accessible at http://localhost:3000.
 
