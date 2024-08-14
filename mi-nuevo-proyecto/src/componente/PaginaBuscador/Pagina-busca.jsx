@@ -22,35 +22,26 @@ export default function Pagina() {
 
     const handleSearch = () => {
         setLoading(true);
-        let persona = `https://itunes.apple.com/search?term=${searchTerm.trimEnd().replace(/ {2,}/g, "+").replace(/ /g, "+").toLowerCase()}`;
+        let url = `https://itunes.apple.com/search?term=${searchTerm.trim().replace(/ {2,}/g, "+").replace(/ /g, "+").toLowerCase()}`;
         if (selectedOption !== "all") {
-            persona = persona + `&media=${selectedOption}`;
+            url += `&media=${selectedOption}`;
         }
-        persona = persona + `&limit=${selectedOption1}`;
+        url += `&limit=${selectedOption1}`;
 
-        sendAndReceiveJson(persona).then((responsedata) => {
-            setData(responsedata.results.sort((a, b) => {
-                if (a[sortConfig.key] < b[sortConfig.key]) return sortConfig.direction === 'asc' ? -1 : 1;
-                if (a[sortConfig.key] > b[sortConfig.key]) return sortConfig.direction === 'asc' ? 1 : -1;
+        sendAndReceiveJson(url).then((responsedata) => {
+            const sortedData = responsedata.results.sort((a, b) => {
+                const aValue = sortConfig.key === 'trackName' ? (a.trackName || a.collectionName) : a[sortConfig.key];
+                const bValue = sortConfig.key === 'trackName' ? (b.trackName || b.collectionName) : b[sortConfig.key];
+
+                if (aValue < bValue) return sortConfig.direction === 'asc' ? -1 : 1;
+                if (aValue > bValue) return sortConfig.direction === 'asc' ? 1 : -1;
                 return 0;
-            }));
+            });
 
+            setData(sortedData);
             setLoading(false);
             setCurrentPage(1);
-
         });
-    };
-
-    const mas = (track) => {
-        if (track.wrapperType === "audiobook") {
-            navigate('/repAudioLib', { state: { track } });
-        }
-        if (track.kind === "song") {
-            navigate('/repAudio', { state: { track } });
-        }
-        if (track.kind === "feature-movie") {
-            navigate('/repVideo', { state: { track } });
-        }
     };
 
     const handleOptionChange = (event) => {
@@ -59,6 +50,16 @@ export default function Pagina() {
 
     const handleOptionChange1 = (event) => {
         setSelectedOption1(event.target.value);
+    };
+
+    const mas = (track) => {
+        if (track.wrapperType === "audiobook") {
+            navigate('/repAudioLib', { state: { track } });
+        } else if (track.kind === "song") {
+            navigate('/repAudio', { state: { track } });
+        } else if (track.kind === "feature-movie") {
+            navigate('/repVideo', { state: { track } });
+        }
     };
 
     const indexOfLastItem = currentPage * itemsPerPage;
@@ -72,27 +73,33 @@ export default function Pagina() {
         for (let i = 1; i <= Math.ceil(data.length / itemsPerPage); i++) {
             pageNumbers.push(i);
         }
-
+        
         return (
             <Pagination className="pagination-container">
-                {pageNumbers.map(number => (
-                    <button
-                        key={number}
-                        className={`page-btn ${number === currentPage ? 'active' : ''}`}
-                        onClick={() => handlePageChange(number)}
-                    >
-                        {number === currentPage ? `Página ${number}` : number}
-                    </button>
-                ))}
+                {pageNumbers.map(number => {
+                
+                    if (number===pageNumbers[0]||number===pageNumbers[pageNumbers.length-1]||number<=currentPage+2&&number>=currentPage-2) {
+                        return(
+                            <button
+                                key={number}
+                                className={`page-btn ${number === currentPage ? 'active' : ''}`}
+                                onClick={() => handlePageChange(number)}
+                            >
+                                {number === currentPage ? `Página ${number}` : number}
+                            </button>
+                        )
+                    }
+                    if (number===currentPage-3||number===currentPage+3) {
+                        return(<>...</>)
+                        
+                    }
+                    })}
             </Pagination>
         );
     };
 
     const truncateText = (text, maxLength) => {
-        if (text.length > maxLength) {
-            return text.substring(0, maxLength) + '...';
-        }
-        return text;
+        return text.length > maxLength ? `${text.substring(0, maxLength)}...` : text;
     };
 
     const handleSort = (key) => {
@@ -126,11 +133,7 @@ export default function Pagina() {
 
     const renderSortIcon = (key) => {
         if (sortConfig.key === key) {
-            if (sortConfig.direction === 'asc') {
-                return <FontAwesomeIcon icon={faArrowUp} />;
-            } else {
-                return <FontAwesomeIcon icon={faArrowDown} />;
-            }
+            return sortConfig.direction === 'asc' ? <FontAwesomeIcon icon={faArrowUp} /> : <FontAwesomeIcon icon={faArrowDown} />;
         }
         return null;
     };
@@ -141,18 +144,17 @@ export default function Pagina() {
             <input
                 type="text"
                 value={searchTerm}
-                onChange={(e) => {console.log(e.target.value);
-                    setSearchTerm(e.target.value)}}
-                placeholder="Ingresa las considencias"
+                onChange={(e) => setSearchTerm(e.target.value)}
+                placeholder="Ingresa las coincidencias"
             />
             <select value={selectedOption} onChange={handleOptionChange}>
                 <option value="all">Todo</option>
-                <option value="music">Musica</option>
-                <option value="movie">Pelicula</option>
-                <option value="audiobook">Audio Libro</option>
+                <option value="music">Música</option>
+                <option value="movie">Película</option>
+                <option value="audiobook">Audiolibro</option>
             </select>
             <select value={selectedOption1} onChange={handleOptionChange1}>
-                <option value="" disabled hidden>Número resultados Mostrados</option>
+                <option value="" disabled hidden>Número de resultados mostrados</option>
                 <option value="50">50</option>
                 <option value="25">25</option>
                 <option value="100">100</option>
@@ -160,10 +162,10 @@ export default function Pagina() {
             </select>
             <button className="search-btn" onClick={handleSearch}>Buscar <FaSearch /></button>
             {!loading ? (
-                data.length === 0 ? (<>
-                    {searchTerm===""?<p style={{ color: 'red' }}>Debe ingresar una coincidencia</p>:<p>Inicia tu Búsqueda</p>}
-                    </>
-                    
+                data.length === 0 ? (
+                    <div>
+                        {searchTerm === "" ? <p style={{ color: 'red' }}>Debe ingresar una coincidencia</p> : <p>Inicia tu búsqueda</p>}
+                    </div>
                 ) : (
                     <>
                         {renderPagination()}
@@ -171,7 +173,7 @@ export default function Pagina() {
                             <thead>
                                 <tr>
                                     <th onClick={() => handleSort('artistName')}>
-                                        Nombre de Artista {renderSortIcon('artistName')}
+                                        Nombre del Artista {renderSortIcon('artistName')}
                                     </th>
                                     <th onClick={() => handleSort('releaseDate')}>
                                         Fecha de Lanzamiento {renderSortIcon('releaseDate')}
@@ -182,7 +184,7 @@ export default function Pagina() {
                                     <th onClick={() => handleSort('trackName')}>
                                         Nombre {renderSortIcon('trackName')}
                                     </th>
-                                    <th>Imagén</th>
+                                    <th>Imagen</th>
                                     <th>Más Información</th>
                                 </tr>
                             </thead>
@@ -193,7 +195,7 @@ export default function Pagina() {
                                         <td>{track.releaseDate.substring(0, 10)}</td>
                                         <td>{track.kind === "song" ? <FaMusic /> : track.wrapperType === "audiobook" ? <GiAudioCassette /> : <FaFilm />}</td>
                                         <td>{track.trackName ? truncateText(track.trackName, 50) : truncateText(track.collectionName, 50)}</td>
-                                        <td><img src={track.artworkUrl60} alt="Imagen No Disponible" /></td>
+                                        <td><img src={track.artworkUrl60} alt="Imagen no disponible" /></td>
                                         <td><button onClick={() => mas(track)}>Más</button></td>
                                     </tr>
                                 ))}
@@ -205,8 +207,10 @@ export default function Pagina() {
                     </>
                 )
             ) : (
-                <div><img src={"https://media.tenor.com/CoTlwd0htiEAAAAi/space-bob-loading.gif"} alt="Loading animation" /><br/>
-                {searchTerm===""?<p style={{ color: 'red' }}>Debe ingresar una coincidencia</p>:<></>}</div>
+                <div>
+                    <img src={"https://media.tenor.com/CoTlwd0htiEAAAAi/space-bob-loading.gif"} alt="Loading animation" /><br/>
+                    {searchTerm === "" ? <p style={{ color: 'red' }}>Debe ingresar una coincidencia</p> : null}
+                </div>
             )}
         </div>
     );
