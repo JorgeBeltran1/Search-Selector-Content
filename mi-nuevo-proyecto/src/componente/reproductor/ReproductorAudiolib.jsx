@@ -1,8 +1,13 @@
 import React from 'react';
-import { useLocation } from 'react-router-dom';
-import "./stilo.css"
+import { useLocation, useNavigate } from 'react-router-dom';
+import { Button } from 'react-bootstrap'; // Importar Button de react-bootstrap
+import './stilo.css'; // Asegúrate de tener estos estilos en tu archivo CSS
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
+
 export default function RepAudLib() {
   const location = useLocation();
+  const navigate = useNavigate();
   const { track } = location.state || {};
 
   if (!track) {
@@ -10,12 +15,14 @@ export default function RepAudLib() {
   }
 
   return (
-    <div>
-      <h3>Reproductor de Audio Libro</h3>
-      <audio controls>
-        <source src={track.previewUrl} type="audio/mp4" />
-        Tu navegador no soporta el elemento de audio.
-      </audio>      
+    <div className="container">
+      <Button
+        variant="primary"
+        onClick={() => navigate('/')}
+        className="circle-button"
+      ><FontAwesomeIcon icon={faArrowLeft} className="icon-left" />        
+      </Button>
+      <h2>Detalles del Audio Libro</h2>
       <table>
         <tbody>
           <tr>
@@ -23,9 +30,18 @@ export default function RepAudLib() {
             <th>Información</th>
           </tr>
           <tr>
-            <td><strong>Tipo </strong></td>
+            <td><h3>Prueba de Audio Libro</h3></td>
+            <td>
+              <audio controls>
+                <source src={track.previewUrl} type="audio/mp4" />
+                Tu navegador no soporta el elemento de audio.
+              </audio>
+            </td>
+          </tr>
+          <tr>
+            <td><strong>Tipo</strong></td>
             <td>{track.wrapperType}</td>
-          </tr>    
+          </tr>
           <tr>
             <td><strong>Nombre del Artista</strong></td>
             <td>{track.artistName}</td>
@@ -41,7 +57,7 @@ export default function RepAudLib() {
           <tr>
             <td><strong>URL de la Colección</strong></td>
             <td><a href={track.collectionViewUrl} target="_blank" rel="noopener noreferrer">Ver Colección</a></td>
-          </tr>          
+          </tr>
           <tr>
             <td><strong>Imagen de Libro</strong></td>
             <td><img src={track.artworkUrl100} alt="Imagen de la Colección" /></td>
