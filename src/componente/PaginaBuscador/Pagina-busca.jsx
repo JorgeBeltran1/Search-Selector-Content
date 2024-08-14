@@ -17,8 +17,9 @@ export default function Pagina() {
     const [loading, setLoading] = useState(false);
     const [currentPage, setCurrentPage] = useState(1);
     const [sortConfig, setSortConfig] = useState({ key: 'artistName', direction: 'asc' });
-    const [Mensaje, setMensaje] = useState("Inicia tu búsqueda")
-    const itemsPerPage = 10;
+    const [Mensaje, setMensaje] = useState("Inicia tu búsqueda");
+    const [mirartodo, setMirartodo] = useState("Desplegar Todo")
+    const [itemsPerPage, setItemsPerPage] = useState(10);
     const navigate = useNavigate();
 
     const handleSearch = () => {
@@ -45,6 +46,9 @@ export default function Pagina() {
                 setData(sortedData);
 
                 setCurrentPage(1);
+                if (mirartodo==="Paginar") {
+                    MirarTodo();
+                }
             }
             setLoading(false);
 
@@ -76,6 +80,16 @@ export default function Pagina() {
 
     const handlePageChange = (pageNumber) => setCurrentPage(pageNumber);
 
+    const MirarTodo = () => {if (mirartodo==="Desplegar Todo") {
+        setMirartodo("Paginar");
+        setCurrentPage(1);
+        setItemsPerPage(data.length);        
+    } else {
+        setMirartodo("Desplegar Todo")
+        setItemsPerPage(10);
+    }};
+
+    
     const renderPagination = () => {
         const pageNumbers = [];
         for (let i = 1; i <= Math.ceil(data.length / itemsPerPage); i++) {
@@ -98,10 +112,11 @@ export default function Pagina() {
                         )
                     }
                     if (number === currentPage - 3 || number === currentPage + 3) {
-                        return (<>...</>)
+                        return (<a key={number}>...</a>)
 
                     }
                 })}
+                
             </Pagination>
         );
     };
@@ -176,7 +191,16 @@ export default function Pagina() {
                     </div>
                 ) : (
                     <>
-                        {renderPagination()}
+                        {mirartodo==="Desplegar Todo"? renderPagination():<></>}
+                        <Pagination className="pagination-container">
+                        <button
+                                
+                                className={`page-btn `}
+                                onClick={() => MirarTodo()}
+                            >
+                                {mirartodo}
+                            </button>
+                            </Pagination>
                         <Table striped bordered hover className="table">
                             <thead>
                                 <tr>
@@ -210,7 +234,7 @@ export default function Pagina() {
                             </tbody>
                         </Table>
                         <div className="pagination-container">
-                            {renderPagination()}
+                        {mirartodo==="Desplegar Todo"? renderPagination():<></>}
                         </div>
                     </>
                 )
