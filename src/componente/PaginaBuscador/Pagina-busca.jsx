@@ -16,7 +16,8 @@ export default function Pagina() {
     const [data, setData] = useState([]);
     const [loading, setLoading] = useState(false);
     const [currentPage, setCurrentPage] = useState(1);
-    const [sortConfig, setSortConfig] = useState({ key: 'artistName', direction: 'asc' }); // Estado para el ordenamiento
+    const [sortConfig, setSortConfig] = useState({ key: 'artistName', direction: 'asc' });
+    const [Mensaje, setMensaje] = useState("Inicia tu búsqueda")
     const itemsPerPage = 10;
     const navigate = useNavigate();
 
@@ -29,18 +30,25 @@ export default function Pagina() {
         url += `&limit=${selectedOption1}`;
 
         sendAndReceiveJson(url).then((responsedata) => {
-            const sortedData = responsedata.results.sort((a, b) => {
-                const aValue = sortConfig.key === 'trackName' ? (a.trackName || a.collectionName) : a[sortConfig.key];
-                const bValue = sortConfig.key === 'trackName' ? (b.trackName || b.collectionName) : b[sortConfig.key];
+            setData([])
+            setMensaje("No se encontro considencias")
+            console.log(responsedata);
+            if (responsedata) {
+                const sortedData = responsedata.results.sort((a, b) => {
+                    const aValue = sortConfig.key === 'trackName' ? (a.trackName || a.collectionName) : a[sortConfig.key];
+                    const bValue = sortConfig.key === 'trackName' ? (b.trackName || b.collectionName) : b[sortConfig.key];
 
-                if (aValue < bValue) return sortConfig.direction === 'asc' ? -1 : 1;
-                if (aValue > bValue) return sortConfig.direction === 'asc' ? 1 : -1;
-                return 0;
-            });
+                    if (aValue < bValue) return sortConfig.direction === 'asc' ? -1 : 1;
+                    if (aValue > bValue) return sortConfig.direction === 'asc' ? 1 : -1;
+                    return 0;
+                });
+                setData(sortedData);
 
-            setData(sortedData);
+                setCurrentPage(1);
+            }
             setLoading(false);
-            setCurrentPage(1);
+
+
         });
     };
 
@@ -73,13 +81,13 @@ export default function Pagina() {
         for (let i = 1; i <= Math.ceil(data.length / itemsPerPage); i++) {
             pageNumbers.push(i);
         }
-        
+
         return (
             <Pagination className="pagination-container">
                 {pageNumbers.map(number => {
-                
-                    if (number===pageNumbers[0]||number===pageNumbers[pageNumbers.length-1]||number<=currentPage+2&&number>=currentPage-2) {
-                        return(
+
+                    if (number === pageNumbers[0] || number === pageNumbers[pageNumbers.length - 1] || number <= currentPage + 2 && number >= currentPage - 2) {
+                        return (
                             <button
                                 key={number}
                                 className={`page-btn ${number === currentPage ? 'active' : ''}`}
@@ -89,11 +97,11 @@ export default function Pagina() {
                             </button>
                         )
                     }
-                    if (number===currentPage-3||number===currentPage+3) {
-                        return(<>...</>)
-                        
+                    if (number === currentPage - 3 || number === currentPage + 3) {
+                        return (<>...</>)
+
                     }
-                    })}
+                })}
             </Pagination>
         );
     };
@@ -164,7 +172,7 @@ export default function Pagina() {
             {!loading ? (
                 data.length === 0 ? (
                     <div>
-                        {searchTerm === "" ? <p style={{ color: 'red' }}>Debe ingresar una coincidencia</p> : <p>Inicia tu búsqueda</p>}
+                        {searchTerm === "" ? <p style={{ color: 'red' }}>Debe ingresar una coincidencia</p> : <p>{Mensaje}</p>}
                     </div>
                 ) : (
                     <>
@@ -208,7 +216,7 @@ export default function Pagina() {
                 )
             ) : (
                 <div>
-                    <img src={"https://media.tenor.com/CoTlwd0htiEAAAAi/space-bob-loading.gif"} alt="Loading animation" /><br/>
+                    <img src={"https://media.tenor.com/CoTlwd0htiEAAAAi/space-bob-loading.gif"} alt="Loading animation" /><br />
                     {searchTerm === "" ? <p style={{ color: 'red' }}>Debe ingresar una coincidencia</p> : null}
                 </div>
             )}
