@@ -33,7 +33,6 @@ export default function Pagina() {
         sendAndReceiveJson(url).then((responsedata) => {
             setData([])
             setMensaje("No se encontro considencias")
-            console.log(responsedata);
             if (responsedata) {
                 const sortedData = responsedata.results.sort((a, b) => {
                     const aValue = sortConfig.key === 'trackName' ? (a.trackName || a.collectionName) : a[sortConfig.key];
@@ -46,7 +45,7 @@ export default function Pagina() {
                 setData(sortedData);
 
                 setCurrentPage(1);
-                if (mirartodo==="Paginar") {
+                if (mirartodo === "Paginar") {
                     MirarTodo();
                 }
             }
@@ -80,16 +79,18 @@ export default function Pagina() {
 
     const handlePageChange = (pageNumber) => setCurrentPage(pageNumber);
 
-    const MirarTodo = () => {if (mirartodo==="Desplegar Todo") {
-        setMirartodo("Paginar");
-        setCurrentPage(1);
-        setItemsPerPage(data.length);        
-    } else {
-        setMirartodo("Desplegar Todo")
-        setItemsPerPage(10);
-    }};
+    const MirarTodo = () => {
+        if (mirartodo === "Desplegar Todo") {
+            setMirartodo("Paginar");
+            setCurrentPage(1);
+            setItemsPerPage(data.length);
+        } else {
+            setMirartodo("Desplegar Todo")
+            setItemsPerPage(10);
+        }
+    };
 
-    
+
     const renderPagination = () => {
         const pageNumbers = [];
         for (let i = 1; i <= Math.ceil(data.length / itemsPerPage); i++) {
@@ -99,8 +100,7 @@ export default function Pagina() {
         return (
             <Pagination className="pagination-container">
                 {pageNumbers.map(number => {
-
-                    if (number === pageNumbers[0] || number === pageNumbers[pageNumbers.length - 1] || number <= currentPage + 2 && number >= currentPage - 2) {
+                    if (number === pageNumbers[0] || number === pageNumbers[pageNumbers.length - 1] || (number <= currentPage + 2 && number >= currentPage - 2)) {
                         return (
                             <button
                                 key={number}
@@ -109,14 +109,15 @@ export default function Pagina() {
                             >
                                 {number === currentPage ? `Página ${number}` : number}
                             </button>
-                        )
+                        );
+                    } else if (number === currentPage - 3 || number === currentPage + 3) {
+                        return <span key={number}>...</span>;
                     }
-                    if (number === currentPage - 3 || number === currentPage + 3) {
-                        return (<a key={number}>...</a>)
 
-                    }
+                    return null;
                 })}
-                
+
+
             </Pagination>
         );
     };
@@ -191,16 +192,17 @@ export default function Pagina() {
                     </div>
                 ) : (
                     <>
-                        {mirartodo==="Desplegar Todo"? renderPagination():<></>}
-                        <Pagination className="pagination-container">
-                        <button
-                                
+                        {mirartodo === "Desplegar Todo" && renderPagination()}
+                        {data.length > 10 && <Pagination className="pagination-container">
+                            <button
+
                                 className={`page-btn `}
                                 onClick={() => MirarTodo()}
                             >
                                 {mirartodo}
                             </button>
-                            </Pagination>
+                        </Pagination>}
+
                         <Table striped bordered hover className="table">
                             <thead>
                                 <tr>
@@ -234,7 +236,7 @@ export default function Pagina() {
                             </tbody>
                         </Table>
                         <div className="pagination-container">
-                        {mirartodo==="Desplegar Todo"? renderPagination():<></>}
+                            {mirartodo === "Desplegar Todo" && renderPagination()}
                         </div>
                     </>
                 )
