@@ -25,7 +25,6 @@ Clona el repositorio:
 
 ```bash
 git clone https://github.com/JorgeBeltran1/Search-Selector-Content/
-cd itunes-search-app
 ```
 
 Instala las dependencias:
